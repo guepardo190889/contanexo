@@ -58,6 +58,8 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.material3.icons)
+    implementation(libs.androidx.browser)
+    implementation(libs.okhttp)
 
     // Ciclo de vida (para coroutines/collectAsStateWithLifecycle si lo usas)
     implementation(libs.androidx.lifecycle.runtime.ktx)
