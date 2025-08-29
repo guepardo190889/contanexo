@@ -44,7 +44,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
@@ -214,26 +213,34 @@ private fun TareaItem(
                     overflow = TextOverflow.Ellipsis
                 )
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Detalle a la izquierda
-                    val subt = buildString {
-                        t.obligacionTag?.let { append("$it • ") }
-                        t.descripcionCorta?.let { append(it) }
-                    }
-                    Text(
-                        subt,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(1f)
-                    )
-
-                    // Badge mínimo a la derecha (sólo si hay fecha)
-                    DueBadge(t.venceElUtc)
+                val subt = buildString {
+                    t.obligacionTag?.let { append("$it • ") }
+                    t.descripcionCorta?.let { append(it) }
                 }
+                Text(
+                    subt,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                // Badge de vencimiento: línea propia y alineable
+                if (t.venceElUtc != null) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 4.dp)
+                    ) {
+                        DueBadge(
+                            venceUtc = t.venceElUtc,
+                            modifier = Modifier.align(
+                                Alignment.CenterEnd
+                            )
+                        )
+                    }
+                }
+
             }
 
             // DERECHA: menú ⋮
@@ -252,14 +259,6 @@ private fun TareaItem(
             }
         }
     }
-}
-
-@Composable
-private fun estadoColor(estado: TareaEstado): Color = when (estado) {
-    TareaEstado.PENDIENTE   -> MaterialTheme.colorScheme.tertiary
-    TareaEstado.VENCIDA     -> MaterialTheme.colorScheme.error
-    TareaEstado.COMPLETADA  -> MaterialTheme.colorScheme.secondary
-    TareaEstado.CANCELADA   -> MaterialTheme.colorScheme.outlineVariant
 }
 
 /** Texto de countdown (compat API 24). */
