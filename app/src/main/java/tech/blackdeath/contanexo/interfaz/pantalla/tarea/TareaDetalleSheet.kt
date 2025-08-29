@@ -79,7 +79,6 @@ fun TareaDetalleSheet(
         onDismissRequest = onClose,
         sheetState = sheetState,
     ) {
-        // estructura: contenido scrollable + pie fijo
         Column(
             Modifier
                 .fillMaxWidth()
@@ -92,7 +91,6 @@ fun TareaDetalleSheet(
                 modifier = Modifier.padding(top = 8.dp, bottom = 6.dp)
             )
 
-            // chips informativos
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -101,7 +99,6 @@ fun TareaDetalleSheet(
                 CompactTag(text = t.tipo.name.replace('_',' '))
                 CompactTag(text = "Prioridad: ${t.prioridad}")
                 t.obligacionTag?.let { CompactTag(text = it) }
-                // el vencimiento lo seguimos mostrando con tu DueBadge
                 DueBadge(t.venceElUtc)
             }
 

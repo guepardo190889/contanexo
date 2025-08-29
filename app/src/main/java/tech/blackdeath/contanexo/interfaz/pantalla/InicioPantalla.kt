@@ -38,6 +38,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import tech.blackdeath.contanexo.dato.aviso.AvisoModel
 import tech.blackdeath.contanexo.dato.aviso.AvisoRepositoryMock
+import tech.blackdeath.contanexo.dato.tarea.TareaEstado
 import tech.blackdeath.contanexo.dato.tarea.TareaModel
 import tech.blackdeath.contanexo.dato.tarea.TareaRepositoryMock
 import tech.blackdeath.contanexo.interfaz.comun.EmptyHint
@@ -80,7 +81,7 @@ fun InicioPantalla(
                 coroutineScope {
                     val p = async { tareasRepository.listar() }
                     val a = async { avisoRepo.recientes() }
-                    proximas = p.await()
+                    proximas = p.await().filter { it.estado == TareaEstado.PENDIENTE }
                     avisos = a.await()
                 }
             }.onFailure {
@@ -120,7 +121,7 @@ fun InicioPantalla(
                 ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                     SectionHeader(
                         icon = Icons.AutoMirrored.Filled.Assignment,
-                        title = "Próximas obligaciones",
+                        title = "Próximas tareas",
                         actionText = "Ver todo",
                         onAction = { nav.go(Pantalla.Tareas) }
                     )
