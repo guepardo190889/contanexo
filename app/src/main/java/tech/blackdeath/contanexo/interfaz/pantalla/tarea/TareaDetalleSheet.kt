@@ -4,6 +4,8 @@ import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,7 +23,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AttachFile
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Description
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -30,6 +31,8 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.SuggestionChip
+import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -37,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -50,7 +54,6 @@ import kotlinx.coroutines.launch
 import tech.blackdeath.contanexo.dato.tarea.TareaEstado
 import tech.blackdeath.contanexo.dato.tarea.TareaModel
 import tech.blackdeath.contanexo.dato.tarea.TareaRepository
-import tech.blackdeath.contanexo.interfaz.comun.DueChip
 
 /**
  * Muestra un BottomSheet con el detalle de una tarea.
@@ -95,10 +98,11 @@ fun TareaDetalleSheet(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                AssistChip(onClick = {}, label = { Text(t.tipo.name.replace('_', ' ')) })
-                AssistChip(onClick = {}, label = { Text("Prioridad: ${t.prioridad}") })
-                t.obligacionTag?.let { AssistChip(onClick = {}, label = { Text(it) }) }
-                DueChip(t.venceElUtc)
+                CompactTag(text = t.tipo.name.replace('_',' '))
+                CompactTag(text = "Prioridad: ${t.prioridad}")
+                t.obligacionTag?.let { CompactTag(text = it) }
+                // el vencimiento lo seguimos mostrando con tu DueBadge
+                DueBadge(t.venceElUtc)
             }
 
             Spacer(Modifier.height(8.dp))
@@ -213,7 +217,6 @@ fun TareaDetalleSheet(
                 OutlinedButton(
                     onClick = { pickLauncher.launch(arrayOf("application/pdf", "image/*")) },
                     modifier = Modifier
-                        .heightIn(min = 48.dp)
                         .semantics { contentDescription = "Adjuntar archivo" }
                 ) {
                     Icon(Icons.Outlined.AttachFile, contentDescription = null)
@@ -235,24 +238,48 @@ fun TareaDetalleSheet(
                     },
                     enabled = puedeCompletar,
                     modifier = Modifier
-                        .heightIn(min = 48.dp)
                         .semantics { contentDescription = "Marcar como completada" }
                 ) {
                     Icon(Icons.Outlined.CheckCircle, contentDescription = null)
                     Spacer(Modifier.width(8.dp))
                     Text("Marcar completada")
                 }
-
-                Spacer(Modifier.weight(1f))
-                TextButton(
-                    onClick = onClose,
-                    modifier = Modifier
-                        .heightIn(min = 48.dp)
-                        .semantics { contentDescription = "Cerrar detalle" }
-                ) { Text("Cerrar") }
             }
+
+            TextButton(
+                onClick = onClose,
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .heightIn(min = 48.dp)
+                    .semantics { contentDescription = "Cerrar" }
+            ) { Text("Cerrar") }
 
             Spacer(Modifier.navigationBarsPadding())
         }
     }
+}
+
+/**
+ * Tag compacto.
+ */
+@Composable
+private fun CompactTag(
+    text: String,
+    modifier: Modifier = Modifier,
+    tint: Color? = null,
+) {
+    val container = tint?.copy(alpha = 0.14f) ?: MaterialTheme.colorScheme.surface
+    val chipShape = MaterialTheme.shapes.large
+
+    SuggestionChip(
+        onClick = { /* no-op */ },
+        label = { Text(text, style = MaterialTheme.typography.labelSmall) },
+        colors = SuggestionChipDefaults.suggestionChipColors(
+            containerColor = container,
+            labelColor = MaterialTheme.colorScheme.onSurface
+        ),
+        shape = chipShape,
+        modifier = modifier
+            .heightIn(min = 24.dp)
+    )
 }

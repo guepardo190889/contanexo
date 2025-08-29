@@ -261,7 +261,9 @@ private fun TareaItem(
     }
 }
 
-/** Texto de countdown (compat API 24). */
+/**
+ * Texto de countdown
+ */
 private fun dueLabel(utc: Long?): String? {
     utc ?: return null
     val diff = utc - System.currentTimeMillis()
@@ -276,7 +278,7 @@ private fun dueLabel(utc: Long?): String? {
 
 /** Badge compacto para vencimiento (mucho más chico que el chip anterior). */
 @Composable
-private fun DueBadge(venceUtc: Long?, modifier: Modifier = Modifier) {
+fun DueBadge(venceUtc: Long?, modifier: Modifier = Modifier) {
     val label = remember(venceUtc) { dueLabel(venceUtc) } ?: return
     Surface(
         modifier = modifier,
