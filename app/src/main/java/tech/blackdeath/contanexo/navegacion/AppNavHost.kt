@@ -8,7 +8,7 @@ import androidx.navigation.compose.composable
 import tech.blackdeath.contanexo.interfaz.pantalla.ExpedientePantalla
 import tech.blackdeath.contanexo.interfaz.pantalla.InicioPantalla
 import tech.blackdeath.contanexo.interfaz.pantalla.LoginScreen
-import tech.blackdeath.contanexo.interfaz.pantalla.NotificacionesScreen
+import tech.blackdeath.contanexo.interfaz.pantalla.AvisosScreen
 import tech.blackdeath.contanexo.interfaz.pantalla.ObligacionesScreen
 
 /**
@@ -34,6 +34,6 @@ fun AppNavHost(nav: NavHostController, modifier: Modifier = Modifier) {
         composable(Pantalla.Inicio.ruta) { InicioPantalla() }
         composable(Pantalla.Obligaciones.ruta) { ObligacionesScreen() }
         composable(Pantalla.Expediente.ruta) { ExpedientePantalla() }
-        composable(Pantalla.Notificaciones.ruta) { NotificacionesScreen() }
+        composable(Pantalla.Notificaciones.ruta) { AvisosScreen() }
     }
 }

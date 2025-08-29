@@ -28,7 +28,7 @@ data class NotificacionUi(
 )
 
 @Composable
-fun NotificacionesScreen(
+fun AvisosScreen(
     onMarcarLeida: (String) -> Unit = {},
     onMarcarTodas: () -> Unit = {}
 ) {
