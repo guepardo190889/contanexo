@@ -9,7 +9,7 @@ import tech.blackdeath.contanexo.interfaz.pantalla.ExpedientePantalla
 import tech.blackdeath.contanexo.interfaz.pantalla.InicioPantalla
 import tech.blackdeath.contanexo.interfaz.pantalla.IngresoPantalla
 import tech.blackdeath.contanexo.interfaz.pantalla.AvisosPantalla
-import tech.blackdeath.contanexo.interfaz.pantalla.TareasPantalla
+import tech.blackdeath.contanexo.interfaz.pantalla.tarea.TareasPantalla
 
 /**
  * Función que representa la navegación de la aplicación.
