@@ -5,7 +5,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
+import tech.blackdeath.contanexo.interfaz.pantalla.tarea.DarkEstadoColors
+import tech.blackdeath.contanexo.interfaz.pantalla.tarea.LightEstadoColors
+import tech.blackdeath.contanexo.interfaz.pantalla.tarea.LocalEstadoColors
 
 private val LightColors = lightColorScheme(
     primary = Color(0xFF1F5AA6),
@@ -31,9 +35,13 @@ fun ContaNexoTheme(
     content: @Composable () -> Unit
 ) {
     val colors = if (darkTheme) DarkColors else LightColors
-    MaterialTheme(
-        colorScheme = colors,
-        typography = androidx.compose.material3.Typography(),
-        content = content
-    )
+    val estadoColors = if (darkTheme) DarkEstadoColors else LightEstadoColors
+
+    CompositionLocalProvider(LocalEstadoColors provides estadoColors) {
+        MaterialTheme(
+            colorScheme = colors,
+            typography = androidx.compose.material3.Typography(),
+            content = content
+        )
+    }
 }

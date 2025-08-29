@@ -1,5 +1,7 @@
 package tech.blackdeath.contanexo.interfaz.pantalla.tarea
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -9,12 +11,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.CardDefaults
@@ -39,8 +43,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
@@ -48,10 +52,8 @@ import tech.blackdeath.contanexo.dato.tarea.TareaEstado
 import tech.blackdeath.contanexo.dato.tarea.TareaModel
 import tech.blackdeath.contanexo.dato.tarea.TareaRepository
 import tech.blackdeath.contanexo.dato.tarea.TareaRepositoryMock
-import tech.blackdeath.contanexo.interfaz.comun.DueChip
 import tech.blackdeath.contanexo.interfaz.comun.EmptyHint
 import tech.blackdeath.contanexo.interfaz.comun.ErrorBar
-import tech.blackdeath.contanexo.utileria.formatDateCompat
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -175,26 +177,35 @@ fun TareasPantalla(
  */
 @Composable
 private fun TareaItem(
-    t: TareaModel, onOpen: () -> Unit, onCompletar: () -> Unit
+    t: TareaModel,
+    onOpen: () -> Unit,
+    onCompletar: () -> Unit
 ) {
     var menu by remember { mutableStateOf(false) }
 
     ElevatedCard(
-        modifier = Modifier.fillMaxWidth(), colors = CardDefaults.elevatedCardColors()
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.elevatedCardColors()
     ) {
-        // Layout 3 zonas: izquierda (estado), centro (título+sub), derecha (DueChip + ⋮)
-        Row(modifier = Modifier
-            .clickable(onClickLabel = "Abrir detalle de ${t.titulo}") { onOpen() }
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically) {
-            // IZQUIERDA: pill de estado
-            EstadoPill(t.estado)
+        Row(
+            modifier = Modifier
+                .clickable(onClickLabel = "Abrir detalle de ${t.titulo}") { onOpen() }
+                .padding(horizontal = 12.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .width(6.dp)
+                    .height(52.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(t.estado.accentColor())
+            )
 
-            // CENTRO
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(horizontal = 12.dp)
+                    .padding(start = 12.dp, end = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
                     t.titulo,
@@ -202,79 +213,85 @@ private fun TareaItem(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                val subt = buildString {
-                    t.obligacionTag?.let { append("$it • ") }
-                    t.descripcionCorta?.let { append(it) }
-                    t.venceElUtc?.let { append(" • Vence: ${formatDateCompat(it)}") }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Detalle a la izquierda
+                    val subt = buildString {
+                        t.obligacionTag?.let { append("$it • ") }
+                        t.descripcionCorta?.let { append(it) }
+                    }
+                    Text(
+                        subt,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    // Badge mínimo a la derecha (sólo si hay fecha)
+                    DueBadge(t.venceElUtc)
                 }
-                Text(
-                    subt,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
             }
 
-            // DERECHA: DueChip + menú
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                DueChip(t.venceElUtc)
-                Box {
-                    IconButton(onClick = { menu = true },
-                        modifier = Modifier
-                            .size(48.dp)
-                            .semantics {
-                                contentDescription = "Más opciones de ${t.titulo}"
-                            }) { Icon(Icons.Outlined.MoreVert, contentDescription = null) }
-                    DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
-                        if (t.estado != TareaEstado.COMPLETADA && t.estado != TareaEstado.CANCELADA) {
-                            DropdownMenuItem(text = { Text("Marcar completada") },
-                                onClick = { menu = false; onCompletar() })
-                        }
-                        DropdownMenuItem(text = { Text("Ver detalle") },
-                            onClick = { menu = false; onOpen() })
+            // DERECHA: menú ⋮
+            Box {
+                IconButton(
+                    onClick = { menu = true },
+                    modifier = Modifier.size(48.dp)
+                ) { Icon(Icons.Outlined.MoreVert, contentDescription = "Más opciones") }
+
+                DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
+                    if (t.estado != TareaEstado.COMPLETADA && t.estado != TareaEstado.CANCELADA) {
+                        DropdownMenuItem(text = { Text("Marcar completada") }, onClick = { menu = false; onCompletar() })
                     }
+                    DropdownMenuItem(text = { Text("Ver detalle") }, onClick = { menu = false; onOpen() })
                 }
             }
         }
     }
 }
 
-/**
- * Pill de estado.
- */
 @Composable
-private fun EstadoPill(estado: TareaEstado) {
-    val (txt, container, on) = when (estado) {
-        TareaEstado.PENDIENTE -> Triple(
-            "Pendiente",
-            MaterialTheme.colorScheme.tertiaryContainer,
-            MaterialTheme.colorScheme.onTertiaryContainer
-        )
+private fun estadoColor(estado: TareaEstado): Color = when (estado) {
+    TareaEstado.PENDIENTE   -> MaterialTheme.colorScheme.tertiary
+    TareaEstado.VENCIDA     -> MaterialTheme.colorScheme.error
+    TareaEstado.COMPLETADA  -> MaterialTheme.colorScheme.secondary
+    TareaEstado.CANCELADA   -> MaterialTheme.colorScheme.outlineVariant
+}
 
-        TareaEstado.VENCIDA -> Triple(
-            "Vencida",
-            MaterialTheme.colorScheme.errorContainer,
-            MaterialTheme.colorScheme.onErrorContainer
-        )
-
-        TareaEstado.COMPLETADA -> Triple(
-            "Completada",
-            MaterialTheme.colorScheme.secondaryContainer,
-            MaterialTheme.colorScheme.onSecondaryContainer
-        )
-
-        TareaEstado.CANCELADA -> Triple(
-            "Cancelada",
-            MaterialTheme.colorScheme.surfaceVariant,
-            MaterialTheme.colorScheme.onSurfaceVariant
-        )
+/** Texto de countdown (compat API 24). */
+private fun dueLabel(utc: Long?): String? {
+    utc ?: return null
+    val diff = utc - System.currentTimeMillis()
+    val days = java.util.concurrent.TimeUnit.MILLISECONDS.toDays(diff).toInt()
+    return when {
+        days < 0  -> "hace ${-days}d"
+        days == 0 -> "hoy"
+        days == 1 -> "en 1d"
+        else      -> "en ${days}d"
     }
-    Surface(color = container, contentColor = on, shape = MaterialTheme.shapes.large) {
+}
+
+/** Badge compacto para vencimiento (mucho más chico que el chip anterior). */
+@Composable
+private fun DueBadge(venceUtc: Long?, modifier: Modifier = Modifier) {
+    val label = remember(venceUtc) { dueLabel(venceUtc) } ?: return
+    Surface(
+        modifier = modifier,
+        shape = MaterialTheme.shapes.large,
+        tonalElevation = 0.dp,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        color = MaterialTheme.colorScheme.surface
+    ) {
         Text(
-            txt,
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-            style = MaterialTheme.typography.labelLarge
+            "Vence $label",
+            style = MaterialTheme.typography.labelSmall,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1
         )
     }
 }
