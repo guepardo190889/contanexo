@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.androidx.material3.icons)
     implementation(libs.androidx.browser)
     implementation(libs.okhttp)
+    implementation(libs.androidx.junit)
 
     // Ciclo de vida (para coroutines/collectAsStateWithLifecycle si lo usas)
     implementation(libs.androidx.lifecycle.runtime.ktx)

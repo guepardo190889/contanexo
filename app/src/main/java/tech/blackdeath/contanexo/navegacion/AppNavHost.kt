@@ -6,7 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import tech.blackdeath.contanexo.interfaz.pantalla.ExpedientePantalla
-import tech.blackdeath.contanexo.interfaz.pantalla.HomeScreen
+import tech.blackdeath.contanexo.interfaz.pantalla.InicioPantalla
 import tech.blackdeath.contanexo.interfaz.pantalla.LoginScreen
 import tech.blackdeath.contanexo.interfaz.pantalla.NotificacionesScreen
 import tech.blackdeath.contanexo.interfaz.pantalla.ObligacionesScreen
@@ -18,7 +18,7 @@ import tech.blackdeath.contanexo.interfaz.pantalla.ObligacionesScreen
 fun AppNavHost(nav: NavHostController, modifier: Modifier = Modifier) {
     NavHost(
         navController = nav,
-        startDestination = Pantalla.Ingreso.ruta, // login por ahora
+        startDestination = Pantalla.Ingreso.ruta,
         modifier = modifier
     ) {
         composable(Pantalla.Ingreso.ruta) {
@@ -31,7 +31,7 @@ fun AppNavHost(nav: NavHostController, modifier: Modifier = Modifier) {
                 }
             )
         }
-        composable(Pantalla.Inicio.ruta) { HomeScreen() }
+        composable(Pantalla.Inicio.ruta) { InicioPantalla() }
         composable(Pantalla.Obligaciones.ruta) { ObligacionesScreen() }
         composable(Pantalla.Expediente.ruta) { ExpedientePantalla() }
         composable(Pantalla.Notificaciones.ruta) { NotificacionesScreen() }
