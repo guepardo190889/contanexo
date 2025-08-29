@@ -38,8 +38,8 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import tech.blackdeath.contanexo.dato.aviso.AvisoModel
 import tech.blackdeath.contanexo.dato.aviso.AvisoRepositoryMock
-import tech.blackdeath.contanexo.dato.obligacion.ObligacionModel
-import tech.blackdeath.contanexo.dato.obligacion.ObligacionRepositoryMock
+import tech.blackdeath.contanexo.dato.tarea.TareaModel
+import tech.blackdeath.contanexo.dato.tarea.TareaRepositoryMock
 import tech.blackdeath.contanexo.interfaz.comun.EmptyHint
 import tech.blackdeath.contanexo.interfaz.comun.ErrorBar
 import tech.blackdeath.contanexo.navegacion.LocalAppNavigator
@@ -56,12 +56,12 @@ fun InicioPantalla(
     val nav = LocalAppNavigator.current
 
     // Inyección simple (luego cámbialo por tu DI)
-    val obligRepo = remember { ObligacionRepositoryMock()}
+    val tareasRepository = remember { TareaRepositoryMock()}
     val avisoRepo  = remember { AvisoRepositoryMock() }
 
     var cargando by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
-    var proximas by remember { mutableStateOf<List<ObligacionModel>>(emptyList()) }
+    var proximas by remember { mutableStateOf<List<TareaModel>>(emptyList()) }
     var avisos by remember { mutableStateOf<List<AvisoModel>>(emptyList()) }
 
     val scope = rememberCoroutineScope()
@@ -78,7 +78,7 @@ fun InicioPantalla(
         scope.launch {
             runCatching {
                 coroutineScope {
-                    val p = async { obligRepo.proximas() }
+                    val p = async { tareasRepository.listar() }
                     val a = async { avisoRepo.recientes() }
                     proximas = p.await()
                     avisos = a.await()
@@ -122,7 +122,7 @@ fun InicioPantalla(
                         icon = Icons.AutoMirrored.Filled.Assignment,
                         title = "Próximas obligaciones",
                         actionText = "Ver todo",
-                        onAction = { nav.go(Pantalla.Obligaciones) }
+                        onAction = { nav.go(Pantalla.Tareas) }
                     )
                     Column(Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp)) {
                         if (proximas.isEmpty() && !cargando && error == null) {
@@ -131,8 +131,8 @@ fun InicioPantalla(
                             proximas.forEach { o ->
                                 LineItem(
                                     title = o.titulo,
-                                    subtitle = o.detalle,
-                                    onClick = { nav.go(Pantalla.Obligaciones) }
+                                    subtitle = o.descripcionCorta.orEmpty(),
+                                    onClick = { nav.go(Pantalla.Tareas) }
                                 )
                             }
                         }

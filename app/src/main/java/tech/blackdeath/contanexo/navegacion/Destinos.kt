@@ -11,7 +11,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 sealed class Pantalla(val ruta: String) {
     data object Ingreso : Pantalla("ingreso")
     data object Inicio : Pantalla("inicio")
-    data object Obligaciones : Pantalla("obligaciones")
+    data object Tareas : Pantalla("tareas")
     data object Expediente : Pantalla("expediente")
     data object Notificaciones : Pantalla("notificaciones")
 }
@@ -30,7 +30,7 @@ data class DrawerItem(
  */
 val menu = listOf(
     DrawerItem(Pantalla.Inicio, "Panel", Icons.Outlined.Home),
-    DrawerItem(Pantalla.Obligaciones, "Obligaciones", Icons.AutoMirrored.Outlined.List),
+    DrawerItem(Pantalla.Tareas, "Tareas", Icons.AutoMirrored.Outlined.List),
     DrawerItem(Pantalla.Expediente, "Expediente", Icons.Outlined.Folder),
     DrawerItem(Pantalla.Notificaciones, "Avisos", Icons.Outlined.Notifications),
 )

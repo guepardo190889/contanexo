@@ -7,9 +7,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import tech.blackdeath.contanexo.interfaz.pantalla.ExpedientePantalla
 import tech.blackdeath.contanexo.interfaz.pantalla.InicioPantalla
-import tech.blackdeath.contanexo.interfaz.pantalla.LoginScreen
+import tech.blackdeath.contanexo.interfaz.pantalla.IngresoPantalla
 import tech.blackdeath.contanexo.interfaz.pantalla.AvisosPantalla
-import tech.blackdeath.contanexo.interfaz.pantalla.ObligacionesScreen
+import tech.blackdeath.contanexo.interfaz.pantalla.TareasPantalla
 
 /**
  * Función que representa la navegación de la aplicación.
@@ -22,7 +22,7 @@ fun AppNavHost(nav: NavHostController, modifier: Modifier = Modifier) {
         modifier = modifier
     ) {
         composable(Pantalla.Ingreso.ruta) {
-            LoginScreen(
+            IngresoPantalla(
                 onLogin = {
                     nav.navigate(Pantalla.Inicio.ruta) {
                         popUpTo(Pantalla.Ingreso.ruta) { inclusive = true }
@@ -32,7 +32,7 @@ fun AppNavHost(nav: NavHostController, modifier: Modifier = Modifier) {
             )
         }
         composable(Pantalla.Inicio.ruta) { InicioPantalla() }
-        composable(Pantalla.Obligaciones.ruta) { ObligacionesScreen() }
+        composable(Pantalla.Tareas.ruta) { TareasPantalla() }
         composable(Pantalla.Expediente.ruta) { ExpedientePantalla() }
         composable(Pantalla.Notificaciones.ruta) { AvisosPantalla() }
     }
