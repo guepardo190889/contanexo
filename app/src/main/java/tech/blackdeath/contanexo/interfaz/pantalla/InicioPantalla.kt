@@ -20,7 +20,6 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -41,6 +40,8 @@ import tech.blackdeath.contanexo.dato.aviso.AvisoModel
 import tech.blackdeath.contanexo.dato.aviso.AvisoRepositoryMock
 import tech.blackdeath.contanexo.dato.obligacion.ObligacionModel
 import tech.blackdeath.contanexo.dato.obligacion.ObligacionRepositoryMock
+import tech.blackdeath.contanexo.interfaz.comun.EmptyHint
+import tech.blackdeath.contanexo.interfaz.comun.ErrorBar
 import tech.blackdeath.contanexo.navegacion.LocalAppNavigator
 import tech.blackdeath.contanexo.navegacion.Pantalla
 
@@ -102,7 +103,9 @@ fun InicioPantalla(
             Spacer(Modifier.height(12.dp))
         }
         error?.let {
-            ErrorBar(texto = it, onReintentar = { cargar() })
+            ErrorBar(
+                texto = it,
+                onReintentar = { cargar() })
             Spacer(Modifier.height(12.dp))
         }
 
@@ -169,25 +172,6 @@ fun InicioPantalla(
 // -------------------- helpers UI --------------------
 
 @Composable
-private fun ErrorBar(texto: String, onReintentar: () -> Unit) {
-    Surface(
-        color = MaterialTheme.colorScheme.errorContainer,
-        contentColor = MaterialTheme.colorScheme.onErrorContainer,
-        shape = MaterialTheme.shapes.medium
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(texto, modifier = Modifier.weight(1f))
-            TextButton(onClick = onReintentar) { Text("Reintentar") }
-        }
-    }
-}
-
-@Composable
 private fun SectionHeader(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     title: String,
@@ -241,11 +225,3 @@ private fun LineItem(
     }
 }
 
-@Composable
-private fun EmptyHint(text: String) {
-    Text(
-        text,
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant
-    )
-}
